@@ -1,6 +1,5 @@
-// lib/screens/register_screen.dart
 import 'package:flutter/material.dart';
-// **IMPORTAÇÃO REMOVIDA:** Não precisamos importar a tela de Login, pois o main.dart já mapeia a rota.
+
 
 class RegisterScreen extends StatelessWidget {
   const RegisterScreen({super.key});
@@ -17,10 +16,8 @@ class RegisterScreen extends StatelessWidget {
         elevation: 0,
         iconTheme: const IconThemeData(color: Colors.white), 
       ),
-      // SingleChildScrollView é essencial para telas com muitos inputs
       body: SingleChildScrollView(
         child: Container(
-          // Altura ajustada para ser no mínimo o tamanho da tela (para o gradiente)
           constraints: BoxConstraints(minHeight: size.height - AppBar().preferredSize.height),
           width: double.infinity,
           decoration: const BoxDecoration(
@@ -41,7 +38,7 @@ class RegisterScreen extends StatelessWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  // 1. Logo Menor (Topo)
+    
                   Container(
                     width: 80,
                     height: 80,
@@ -64,8 +61,7 @@ class RegisterScreen extends StatelessWidget {
                   ),
 
                   const SizedBox(height: 30),
-
-                  // 2. O Card de Cadastro
+                  
                   Container(
                     width: size.width * 0.9, 
                     padding: const EdgeInsets.all(30),
@@ -98,38 +94,30 @@ class RegisterScreen extends StatelessWidget {
                         
                         const SizedBox(height: 30),
 
-                        // Input 1: E-mail 
                         _buildModernInput(label: "Email"),
                         
                         const SizedBox(height: 20),
 
-                        // Input 2: Senha
                         _buildModernInput(label: "Senha", isPassword: true),
 
                         const SizedBox(height: 20),
 
-                        // Input 3: Confirmação de Senha
                         _buildModernInput(label: "Confirmação sua senha", isPassword: true),
                         
                         const SizedBox(height: 20),
-
-                        // Input 4: Nome de Usuário
                         _buildModernInput(label: "Nome de usuário"),
 
                         const SizedBox(height: 40),
-
-                        // Botão FINALIZAR
                         SizedBox(
                           width: double.infinity,
                           height: 50,
                           child: ElevatedButton(
                             onPressed: () {
-                              // Ação de Cadastro: Aqui você enviaria os dados
                               print("Clicou em FINALIZAR Cadastro");
-                              // Após o cadastro, você pode forçar a navegação para o Login ou Home
+
                             },
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xFF6200EA), // Cor principal forte
+                              backgroundColor: const Color(0xFF6200EA), 
                               side: const BorderSide(color: Color(0xFF7C4DFF), width: 1),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(25),
@@ -153,14 +141,13 @@ class RegisterScreen extends StatelessWidget {
 
                   const SizedBox(height: 30),
 
-                  // Link LOGIN
                   TextButton(
                     onPressed: () {
-                      // Navega para a tela de Login e remove todas as rotas anteriores (limpando a pilha)
+                     
                       Navigator.pushNamedAndRemoveUntil(
                           context, 
-                          '/login', // Rota Nomeada para Login
-                          (Route<dynamic> route) => false, // Remove todas as rotas anteriores
+                          '/login', 
+                          (Route<dynamic> route) => false, 
                       );
                     },
                     child: const Text(
@@ -184,7 +171,6 @@ class RegisterScreen extends StatelessWidget {
     );
   }
 
-  // Widget auxiliar reutilizado para inputs
   Widget _buildModernInput({required String label, bool isPassword = false}) {
     return TextFormField(
       obscureText: isPassword,
@@ -199,7 +185,6 @@ class RegisterScreen extends StatelessWidget {
         focusedBorder: const UnderlineInputBorder(
           borderSide: BorderSide(color: Color(0xFF7C4DFF), width: 2),
         ),
-        // Adiciona ícones para estética
         suffixIcon: isPassword
             ? const Icon(Icons.lock_outline, color: Colors.grey)
             : label.contains('Email')

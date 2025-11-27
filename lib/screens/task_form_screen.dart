@@ -1,16 +1,10 @@
-// screens/task_form_screen.dart
-
 import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart'; 
-// Importa o modelo Task do seu novo local
 import 'package:taskmaster/models/task.dart'; 
 
-// Adiciona a dependência Uuid, que é a ferramenta mais comum em Flutter para gerar IDs
 const uuid = Uuid();
 
-// NOVO: A TaskFormScreen agora recebe o objeto Task para edição (pode ser nulo)
 class TaskFormScreen extends StatefulWidget {
-  // Alterado para receber um objeto Task ou nulo
   final Task? taskToEdit;
   
   const TaskFormScreen({super.key, this.taskToEdit});
@@ -20,7 +14,6 @@ class TaskFormScreen extends StatefulWidget {
 }
 
 class _TaskFormScreenState extends State<TaskFormScreen> {
-  // Inicialização dos Controllers e variáveis de estado
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _notesController = TextEditingController();
 
@@ -28,7 +21,6 @@ class _TaskFormScreenState extends State<TaskFormScreen> {
   DateTime? _dueDate;
   String _repeatOption = 'Nunca'; 
 
-  // Variável para armazenar o ID da tarefa (existente ou novo)
   late String _taskId;
 
   @override
@@ -38,18 +30,14 @@ class _TaskFormScreenState extends State<TaskFormScreen> {
     final Task? task = widget.taskToEdit;
     
     if (task != null) {
-      // 1. MODO EDIÇÃO: Pré-preencher campos com dados reais da tarefa
       _taskId = task.id; 
       _titleController.text = task.title;
-      
-      // Preenche os novos campos do modelo Task
       _notesController.text = task.notes;
       _alertDate = task.alertDate;
       _dueDate = task.dueDate;
       _repeatOption = task.repeatOption;
       
     } else {
-      // 2. MODO CRIAÇÃO: Gerar um novo ID imediatamente
       _taskId = uuid.v4();
     }
   }
@@ -61,7 +49,6 @@ class _TaskFormScreenState extends State<TaskFormScreen> {
     super.dispose();
   }
 
-  // Função para abrir o seletor de data
   Future<void> _selectDate(BuildContext context, bool isAlertDate) async {
     final DateTime? picked = await showDatePicker(
       context: context,
@@ -69,13 +56,12 @@ class _TaskFormScreenState extends State<TaskFormScreen> {
       firstDate: DateTime.now().subtract(const Duration(days: 365)),
       lastDate: DateTime.now().add(const Duration(days: 365 * 5)),
       builder: (context, child) {
-        // Estilização do DatePicker para seguir o tema Dark
         return Theme(
           data: ThemeData.dark().copyWith(
             colorScheme: const ColorScheme.dark(
-              primary: Color(0xFF7C4DFF), // Cor de destaque roxa
+              primary: Color(0xFF7C4DFF), 
               onPrimary: Colors.white,
-              surface: Color(0xFF1E1E1E), // Fundo escuro
+              surface: Color(0xFF1E1E1E),
               onSurface: Colors.white,
             ),
             dialogBackgroundColor: const Color(0xFF1E1E1E),
@@ -95,7 +81,6 @@ class _TaskFormScreenState extends State<TaskFormScreen> {
     }
   }
 
-  // Função de salvar/atualizar
   void _saveTask() {
     final title = _titleController.text.trim();
 
@@ -106,7 +91,6 @@ class _TaskFormScreenState extends State<TaskFormScreen> {
       return;
     }
 
-    // 1. Cria ou Atualiza o objeto Task com todos os campos do formulário
     final newTask = Task(
       _taskId, 
       title,
@@ -116,24 +100,19 @@ class _TaskFormScreenState extends State<TaskFormScreen> {
       notes: _notesController.text.trim(),
       repeatOption: _repeatOption,
     );
-
-    // 2. Exibe feedback
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text(widget.taskToEdit == null ? 'Tarefa Criada: $title' : 'Tarefa Atualizada: $title')),
     );
 
-    // 3. Retorna a nova Task (ou Task atualizada) para a Home Screen
     Navigator.pop(context, newTask);
   }
 
   @override
   Widget build(BuildContext context) {
-    // Título dinâmico da tela
+
     final screenTitle = widget.taskToEdit == null ? 'Adição de nova tarefa' : 'Edição de tarefa';
     
-    // Removendo o AppBar padrão e usando um header customizado para seguir o design
     return Scaffold(
-      // O gradiente de fundo precisa estar no Scaffold body
       body: Container(
         width: double.infinity,
         height: double.infinity,
@@ -149,11 +128,10 @@ class _TaskFormScreenState extends State<TaskFormScreen> {
             stops: [0.0, 0.4, 1.0], 
           ),
         ),
-        child: SafeArea( // Adiciona SafeArea aqui
+        child: SafeArea( 
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              // --- Custom Header (Substitui o AppBar para manter o design) ---
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0),
                 child: Row(
@@ -175,25 +153,22 @@ class _TaskFormScreenState extends State<TaskFormScreen> {
                   ],
                 ),
               ),
-              
-              // --- Scrollable Form Content ---
+
               Expanded(
                 child: SingleChildScrollView(
                   padding: const EdgeInsets.all(20.0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      // --- Card Principal do Formulário ---
                       Container(
                         padding: const EdgeInsets.all(20),
                         decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.05), // Fundo do card
+                          color: Colors.white.withOpacity(0.05), 
                           borderRadius: BorderRadius.circular(25),
                           border: Border.all(color: const Color(0xFF7C4DFF), width: 1.5),
                         ),
                         child: Column(
                           children: [
-                            // 1. Título/Nome da Tarefa
                             Row(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
@@ -224,12 +199,10 @@ class _TaskFormScreenState extends State<TaskFormScreen> {
                             
                             const SizedBox(height: 30),
 
-                            // 2. Adicionar Etapa (Mockup)
                             _buildStepButton(),
 
                             const SizedBox(height: 20),
                             
-                            // 3. Data de Aviso
                             _buildDateField(
                               label: 'Data de aviso',
                               value: _alertDate,
@@ -239,7 +212,6 @@ class _TaskFormScreenState extends State<TaskFormScreen> {
 
                             const SizedBox(height: 20),
 
-                            // 4. Data de Conclusão
                             _buildDateField(
                               label: 'Data de conclusão',
                               value: _dueDate,
@@ -249,12 +221,11 @@ class _TaskFormScreenState extends State<TaskFormScreen> {
                             
                             const SizedBox(height: 20),
 
-                            // 5. Repetição de Lembrete (Dropdown)
                             _buildRepeatDropdown(),
                             
                             const SizedBox(height: 20),
 
-                            // 6. Notas (Campo de texto multilinha)
+
                             _buildNotesField(),
                           ],
                         ),
@@ -270,9 +241,6 @@ class _TaskFormScreenState extends State<TaskFormScreen> {
     );
   }
 
-  // --- Widgets Auxiliares ---
-  
-  // Widget para o botão Adicionar Etapa
   Widget _buildStepButton() {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 10),
@@ -292,7 +260,6 @@ class _TaskFormScreenState extends State<TaskFormScreen> {
     );
   }
 
-  // Widget para os campos de data (CORRIGIDO PARA RESPONSIVIDADE)
   Widget _buildDateField({
     required String label,
     required DateTime? value,
@@ -315,7 +282,6 @@ class _TaskFormScreenState extends State<TaskFormScreen> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            // Usa Expanded para garantir que a área de texto ocupe o espaço restante
             Expanded(
               child: Row(
                 children: [
@@ -326,12 +292,11 @@ class _TaskFormScreenState extends State<TaskFormScreen> {
                     '$label: ',
                     style: const TextStyle(color: Colors.white, fontSize: 16),
                   ),
-                  // NOVO: Usa Flexible para permitir que o valor da data encolha
                   Flexible( 
                     child: Text(
                       displayValue,
                       style: const TextStyle(color: Color(0xFF7C4DFF), fontSize: 16, fontWeight: FontWeight.w600),
-                      overflow: TextOverflow.ellipsis, // Adiciona "..." se necessário
+                      overflow: TextOverflow.ellipsis, 
                     ),
                   ),
                 ],
@@ -344,7 +309,6 @@ class _TaskFormScreenState extends State<TaskFormScreen> {
     );
   }
 
-  // Widget para o Dropdown de Repetição
   Widget _buildRepeatDropdown() {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10),
@@ -357,7 +321,7 @@ class _TaskFormScreenState extends State<TaskFormScreen> {
         child: DropdownButton<String>(
           value: _repeatOption,
           isExpanded: true,
-          dropdownColor: const Color(0xFF1E1E1E), // Fundo do menu drop
+          dropdownColor: const Color(0xFF1E1E1E), 
           style: const TextStyle(color: Colors.white, fontSize: 16),
           icon: const Icon(Icons.arrow_drop_down, color: Colors.white54),
           onChanged: (String? newValue) {
@@ -379,7 +343,6 @@ class _TaskFormScreenState extends State<TaskFormScreen> {
     );
   }
 
-  // Widget para o campo de Notas
   Widget _buildNotesField() {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10),

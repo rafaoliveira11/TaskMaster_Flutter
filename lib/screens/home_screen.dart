@@ -1,11 +1,8 @@
-// screens/home_screen.dart
-
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart'; 
 import 'package:taskmaster/models/task.dart'; 
 
-// --- Componente: Cartão de Tarefa (TaskCard) ---
 class TaskCard extends StatelessWidget {
   final Task task;
   final VoidCallback onToggle;
@@ -20,16 +17,16 @@ class TaskCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Cor de fundo do cartão, levemente transparente e roxa
+
+
     final backgroundColor = const Color(0xFF6200EA).withOpacity(task.isCompleted ? 0.2 : 0.1);
     
-    // Cor e ícone do checkbox
     final checkColor = task.isCompleted ? const Color(0xFF7C4DFF) : Colors.white54;
     final checkIcon = task.isCompleted ? Icons.check_circle : Icons.circle_outlined;
 
     return GestureDetector(
-      onTap: onToggle, // Alterna o estado ao tocar em qualquer lugar do card
-      onLongPress: onEdit, // Adiciona uma função de Edição no toque longo (opcional)
+      onTap: onToggle, 
+      onLongPress: onEdit, 
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 15),
         decoration: BoxDecoration(
@@ -39,11 +36,8 @@ class TaskCard extends StatelessWidget {
         ),
         child: Row(
           children: [
-            // Ícone de Status (Checkbox)
             Icon(checkIcon, color: checkColor, size: 28),
             const SizedBox(width: 15),
-            
-            // Título da Tarefa
             Expanded(
               child: Text(
                 task.title,
@@ -58,15 +52,13 @@ class TaskCard extends StatelessWidget {
               ),
             ),
             
-            // Ícone de Notificação (Opcional - agora usa o getter hasNotification)
             if (task.hasNotification)
               const Padding(
                 padding: EdgeInsets.only(left: 10.0),
                 child: Icon(Icons.notifications_active, color: Colors.yellow, size: 20),
               ),
             
-            // Ícone de Edição (Adicionado para visualização)
-            if (!task.isCompleted) // Mostra o ícone de edição se não estiver concluída
+            if (!task.isCompleted) 
               GestureDetector(
                 onTap: onEdit,
                 child: const Padding(
@@ -81,22 +73,18 @@ class TaskCard extends StatelessWidget {
   }
 }
 
-// --- Componente: Gaveta de Perfil (AppDrawer) ---
 class AppDrawer extends StatelessWidget {
   const AppDrawer({super.key});
 
-  // Função para simular o Logout
   void _handleLogout(BuildContext context) {
     Navigator.pop(context); 
-    // Volta para a rota de Boas-Vindas
     Navigator.pushNamedAndRemoveUntil(
       context, 
-      '/welcome', // Rota para a WelcomeScreen, conforme definido em main.dart
+      '/welcome', 
       (Route<dynamic> route) => false, 
     );
   }
 
-  // Componente reutilizável para itens da Gaveta
   Widget _buildDrawerItem({
     required IconData icon,
     required String title,
@@ -128,12 +116,10 @@ class AppDrawer extends StatelessWidget {
       ),
       child: Column(
         children: <Widget>[
-          // --- 1. Área de Perfil no Topo ---
           Container(
             padding: const EdgeInsets.only(top: 60, bottom: 15, left: 20),
             width: double.infinity,
             decoration: const BoxDecoration(
-              // Linha divisória sutil
               border: Border(bottom: BorderSide(color: Colors.white24, width: 1)),
             ),
             child: const Text(
@@ -148,13 +134,11 @@ class AppDrawer extends StatelessWidget {
           
           const SizedBox(height: 10),
 
-          // --- 2. Opções Principais ---
           _buildDrawerItem(
             icon: Icons.person_add_alt_1,
-            title: 'ADICIONar PERFIL',
+            title: 'ADICIONAR PERFIL',
             onTap: () {
               Navigator.pop(context); 
-              // TODO: Implementar tela de Adicionar Perfil
               print('Navegar para Adicionar Perfil');
             },
             color: Colors.white,
@@ -165,20 +149,15 @@ class AppDrawer extends StatelessWidget {
             title: 'CONFIGURAÇÕES',
             onTap: () {
               Navigator.pop(context); 
-              // TODO: Implementar tela de Configurações
               print('Navegar para Configurações');
             },
             color: Colors.white,
           ),
 
-          // --- 3. Espaço Flexível ---
           const Spacer(),
-
-          // --- 4. Opção Sair (Logout) ---
           Container(
             padding: const EdgeInsets.only(top: 10, bottom: 10),
             decoration: const BoxDecoration(
-              // Linha divisória sutil acima do SAIR
               border: Border(top: BorderSide(color: Colors.white24, width: 1)),
             ),
             child: _buildDrawerItem(
@@ -188,15 +167,13 @@ class AppDrawer extends StatelessWidget {
               color: Colors.white,
             ),
           ),
-          const SizedBox(height: 30), // Espaçamento inferior
+          const SizedBox(height: 30), 
         ],
       ),
     );
   }
 }
 
-
-// --- Tela Principal (HomeScreen) ---
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
@@ -205,11 +182,12 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  // 1. ESTADO: Lista de tarefas (Inicialmente vazia, será preenchida pelo _loadTasks)
-  List<Task> tasks = [];
-  bool _isLoading = true; // Novo estado para controlar o carregamento
 
-  // Lista inicial de tarefas para preencher a primeira vez que o app rodar
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
+  List<Task> tasks = [];
+  bool _isLoading = true; 
+
   static final List<Task> _defaultTasks = [
     Task('t1', 'Comprar sabão em pó', alertDate: DateTime.now().add(const Duration(days: 1))),
     Task('t2', 'Passar aspirador da casa', isCompleted: true, dueDate: DateTime.now()),
@@ -218,9 +196,6 @@ class _HomeScreenState extends State<HomeScreen> {
     Task('t5', 'Fazer mercado da semana'),
   ];
   
-  // --- FUNÇÕES DE PERSISTÊNCIA ---
-
-  // Carrega as tarefas salvas localmente
   Future<void> _loadTasks() async {
     final prefs = await SharedPreferences.getInstance();
     final String? tasksString = prefs.getString('taskList');
@@ -235,7 +210,6 @@ class _HomeScreenState extends State<HomeScreen> {
         tasks = loadedTasks;
       });
     } else {
-      // Se não houver dados, usa as tarefas padrão
       setState(() {
         tasks = _defaultTasks;
       });
@@ -245,47 +219,34 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
-  // Salva a lista de tarefas localmente
   Future<void> _saveTasks() async {
-    // 1. Converte List<Task> para List<Map> usando task.toJson()
     final List<Map<String, dynamic>> tasksMapList = tasks.map((task) => task.toJson()).toList();
-    // 2. Codifica List<Map> para String JSON
-    final String tasksString = jsonEncode(tasksMapList);
-    
+    final String tasksString = jsonEncode(tasksMapList); 
     final prefs = await SharedPreferences.getInstance();
-    // 3. Salva a string no SharedPreferences
+
     await prefs.setString('taskList', tasksString);
   }
 
   @override
   void initState() {
     super.initState();
-    _loadTasks(); // Carrega as tarefas ao iniciar a tela
+    _loadTasks(); 
   }
   
-  // --- FUNÇÕES DE MUTAÇÃO ---
-
-  // 2. Método para alternar o estado de conclusão de uma tarefa
-  // CORREÇÃO: Usa copyWith para criar uma nova Task (imutabilidade)
   void _toggleTaskCompletion(int index) {
     final currentTask = tasks[index];
 
     setState(() {
-      // Cria uma nova Task, invertendo apenas o estado 'isCompleted'
-      tasks[index] = currentTask.copyWith(
-        isCompleted: !currentTask.isCompleted,
-      );
     });
-    _saveTasks(); // Salva a alteração
+    _saveTasks(); 
   }
   
-  // 3. Método para deletar uma tarefa
   void _deleteTask(String taskId) {
     setState(() {
       tasks.removeWhere((task) => task.id == taskId);
     });
-    _saveTasks(); // Salva a exclusão
-    
+    _saveTasks(); 
+
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
         content: Text('Tarefa excluída!', style: TextStyle(color: Colors.white)),
@@ -294,8 +255,6 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
-
-  // 4. Método para navegar para o formulário de criação/edição e esperar pelo resultado
   void _navigateToAddOrEditTask({int? taskIndex}) async {
     final isEditing = taskIndex != null;
     final Task? taskToEdit = isEditing ? tasks[taskIndex!] : null;
@@ -306,29 +265,26 @@ class _HomeScreenState extends State<HomeScreen> {
       arguments: taskToEdit, 
     );
     
-    // Lógica para adicionar/atualizar a tarefa após retornar do formulário
     if (result != null && result is Task) {
       setState(() {
         if (isEditing) {
-          // Atualiza a tarefa existente na lista
           final index = tasks.indexWhere((t) => t.id == result.id);
           if (index != -1) {
             tasks[index] = result;
           }
         } else {
-          // Adiciona a nova tarefa no topo da lista
           tasks.insert(0, result);
         }
       });
-      _saveTasks(); // Salva a adição ou edição
+      _saveTasks(); 
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    // Usamos um Builder para criar um contexto que permita abrir o Drawer
     return Builder(
       builder: (contextScaffold) => Scaffold(
+        key: _scaffoldKey,
         drawer: const AppDrawer(), 
         
         body: Container(
@@ -352,17 +308,11 @@ class _HomeScreenState extends State<HomeScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // --- 1. Cabeçalho/Top Bar ---
                   _buildHeader(contextScaffold), 
                   
                   const SizedBox(height: 20),
-
-                  // --- 2. Filtros (Mockup do Design) ---
                   _buildFilters(),
-
                   const SizedBox(height: 30),
-
-                  // --- 3. Título da Lista ---
                   Container(
                     padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
                     decoration: BoxDecoration(
@@ -383,10 +333,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
 
                   const SizedBox(height: 20),
-
-                  // --- 4. Lista de Tarefas (Listagem Dinâmica com Dismissible) ---
                   Expanded(
-                    // Mostra um indicador de carregamento enquanto espera por _loadTasks
                     child: _isLoading 
                       ? const Center(child: CircularProgressIndicator(color: Color(0xFF7C4DFF)))
                       : ListView.builder(
@@ -426,7 +373,6 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
         
-        // --- Floating Action Button (Botão de Adicionar) ---
         floatingActionButton: FloatingActionButton(
           onPressed: () => _navigateToAddOrEditTask(), 
           backgroundColor: const Color(0xFF7C4DFF),
@@ -437,23 +383,16 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
-
-  // --- Widgets Auxiliares ---
-
-  // Cabeçalho da tela (inclui o botão que abre o Drawer)
   Widget _buildHeader(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        // Ícone de Perfil e Título (CHAMA O DRAWER NO TAP)
         GestureDetector(
           onTap: () {
-            // Usa o contexto do Builder para abrir o Drawer
-            Scaffold.of(context).openDrawer(); 
+            _scaffoldKey.currentState?.openDrawer();
           },
           child: Row(
             children: [
-              // Ícone/Avatar do Usuário
               Container(
                 padding: const EdgeInsets.all(8),
                 decoration: const BoxDecoration(
@@ -476,7 +415,6 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
 
-        // Ícone de Pesquisa
         Container(
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
